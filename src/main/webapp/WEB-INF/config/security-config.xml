@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--When using ldap for authentication, add users.txt to Resources folder as users.ldif:-->
+    <!--<ldap-server ldif="classpath:users.ldif"/>-->
+
+    <!--We made Security the default namespace above so don't have to define it each time, e.g. below would usually require "<security:http>"-->
+    <http auto-config="true" use-expressions="true"><!--Auto-config set to true creates a login page automatically-->
+        <intercept-url pattern="/login.html" access="permitAll" requires-channel="https"/><!--Allows access to our custom login page-->
+        <intercept-url pattern="/loginFailed.html" access="permitAll" requires-channel="https"/>
+        <intercept-url pattern="/logout.html" access="permitAll" requires-channel="https"/>
+        <intercept-url pattern="/403.html" access="permitAll" requires-channel="https"/>
+        <intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="https"/><!--Intercepts all URLs to force them to go through our Security setup-->
+
+        <!--<http-basic/> Tells to use a Basic Authentication login page-->
+
+        <form-login login-page="/login.html" authentication-failure-url="/loginFailed.html"/>
+        <logout logout-success-url="/logout.html"/>
+        <access-denied-handler error-page="/403.html"/>
+    </http>
+
+    <!--using ldap to manage user authentication:-->
+<!--    <authentication-manager>-->
+        <!--'ou' are Organisational Units-->
+<!--        <ldap-authentication-provider-->
+<!--                group-search-filter="member={0}"-->
+<!--                group-search-base="ou=groups"-->
+<!--                user-search-base="ou=people"-->
+<!--                user-search-filter="uid={0}"/>-->
+<!--    </authentication-manager>-->
+
+    <!--using mysql db to manage user authentication:-->
+    <authentication-manager>
+        <!--'manual' way to configure:-->
+        <!--<authentication-provider user-service-ref="userDetailsService"/>-->
+
+        <!--shorter way:-->
+        <authentication-provider>
+            <password-encoder hash="bcrypt"/> <!--Hashes the password entered on the login page and compares it with the (hashed) password in the db-->
+            <jdbc-user-service data-source-ref="dataSource"/> <!--essentially automatically creates the 'userDetailsService' Bean for us-->
+        </authentication-provider>
+    </authentication-manager>
+
+
+    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/fitnesstrackersecurity"/>
+        <beans:property name="username" value="root"/>
+        <beans:property name="password" value="password"/>
+    </beans:bean>
+
+    <!--'manual' way to configure:-->
+    <!--<beans:bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">-->
+        <!--<beans:property name="dataSource" ref="dataSource"/> refers to/passes in the 'dataSource' Bean defined above-->
+    <!--</beans:bean>-->
+
+</beans:beans>
