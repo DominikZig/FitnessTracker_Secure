@@ -45,24 +45,24 @@ To use LDAP authentication instead of MySQL, you need to use
 instead of 
 ```xml   
 <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <version>1.7.26</version>
-      </dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.26</version>
+</dependency>
 ```
 
 and also add these dependencies:
 ```xml
-      <dependency>
-          <groupId>org.apache.directory.server</groupId>
-          <artifactId>apacheds-all</artifactId>
-          <version>1.5.5</version>
-      </dependency>
-      <dependency>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-ldap</artifactId>
-          <version>3.2.3.RELEASE</version>
-      </dependency>
+<dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-all</artifactId>
+      <version>1.5.5</version>
+</dependency>
+<dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-ldap</artifactId>
+      <version>3.2.3.RELEASE</version>
+</dependency>
 ```
 
 in the POM file.
